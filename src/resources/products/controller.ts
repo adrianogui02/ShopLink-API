@@ -3,6 +3,7 @@ import * as productService from './service';
 import { ProductCreateInput } from './types';
 import { checkAlreadyExists } from './helper';
 import { StatusCodes,ReasonPhrases } from 'http-status-codes';
+import { uploadToPinataBase64 } from './helper';
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
@@ -27,19 +28,44 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
-    const product: ProductCreateInput = req.body;
-    if(!(await checkAlreadyExists(product.nome))){
-        const newProduct = await productService.createProduct(product);
-        res.json(newProduct);
-    } else{
-        res.status(StatusCodes.CONFLICT).send(ReasonPhrases.CONFLICT);   
+    const { nome, descricao, preco } = req.body;
+    const files = req.files as Express.Multer.File[];
+
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'Pelo menos uma imagem é obrigatória' });
+      return;
     }
+
+    if(!checkAlreadyExists(nome)){
+      res.status(400).json({ error: 'Nome do produto já existe' });
+      return;
+    }
+
+    const imageUrls: string[] = [];
+
+    for (const file of files) {
+      const imageUrl = await uploadToPinataBase64(file);
+      imageUrls.push(imageUrl);
+    }
+
+    // Preenche os dados do produto com as URLs das imagens
+    const productData = {
+      nome,
+      descricao,
+      preco: parseFloat(preco),
+      imagemUrls: imageUrls, 
+    };
+
+    const newProduct = await productService.createProduct(productData);
+    res.status(201).json(newProduct);
   } catch (error) {
+    console.error('Erro ao criar produto:', error);
     res.status(500).json({ error: 'Erro ao criar produto' });
   }
 };
+
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;

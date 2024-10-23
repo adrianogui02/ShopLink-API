@@ -1,6 +1,10 @@
 import express from 'express';
 import router from './router/index';
 import { checkDatabaseConnection } from './utils/checkDatabaseConnection';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 
 const app = express();
 
