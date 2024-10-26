@@ -1,6 +1,4 @@
 import {PrismaClient} from "@prisma/client";
-import axios from 'axios';
-import FormData from 'form-data';
 import dotenv from 'dotenv';
 import { PinataSDK } from "pinata-web3";
 dotenv.config();

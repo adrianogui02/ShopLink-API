@@ -38,7 +38,10 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    if(!checkAlreadyExists(nome)){
+    // Verifique se o produto já existe
+    const alreadyExists = await checkAlreadyExists(nome);
+
+    if (alreadyExists) {
       res.status(400).json({ error: 'Nome do produto já existe' });
       return;
     }
@@ -65,6 +68,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ error: 'Erro ao criar produto' });
   }
 };
+
 
 
 export const updateProduct = async (req: Request, res: Response) => {
