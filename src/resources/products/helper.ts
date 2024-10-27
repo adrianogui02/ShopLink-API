@@ -30,14 +30,10 @@ export const uploadToPinataBase64 = async (file: Express.Multer.File): Promise<s
     // Faz o upload em base64 usando o SDK do Pinata
     const response = await pinata.upload.base64(base64File).group(pinataGroup);
 
-    // Obtenha o ipfsHash da resposta
     const ipfsHash = response.IpfsHash;
 
-    // Construa a URL da imagem usando o gateway IPFS
     const imageUrl = `https://gateway.pinata.cloud/ipfs/${ipfsHash}`;
     
-
-    // Retornar a URL do arquivo enviado
     return imageUrl;
 
   } catch (error) {
