@@ -10,9 +10,8 @@ const router = Router();
 
 // Acesso público
 router.get('/', productsController.getAllProducts);
-// As rotas exigem autenticação e autorização
 router.get('/:id', productsController.getProductById);
-
+// As rotas exigem autenticação e autorização
 router.post('/',authenticate,authorizeAdmin,upload.array('imagens', 5), productsController.createProduct);
 router.put('/:id', authenticate,authorizeAdmin,validateBody(productUpdateSchema), productsController.updateProduct);
 router.delete('/:id',authenticate,authorizeAdmin, productsController.deleteProduct);
