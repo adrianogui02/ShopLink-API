@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(router);
 
 const PORT = process.env.PORT || 3000;
+
 // Inicia o servidor
 const startServer = async () => {
     await checkDatabaseConnection();

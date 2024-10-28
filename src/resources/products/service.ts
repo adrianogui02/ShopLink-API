@@ -3,9 +3,14 @@ import { ProductCreateInput, ProductUpdateInput } from './types';
 
 const prisma = new PrismaClient();
 
-export const getAllProducts = async () => {
-  return prisma.product.findMany();
+export const getAllProducts = async () => { 
+  return prisma.product.findMany({
+    include: {
+      imagens: true, 
+    },
+  });
 };
+
 
 export const getProductById = async (id: string) => {
   return prisma.product.findUnique({
@@ -20,11 +25,11 @@ export const createProduct = async (data: ProductCreateInput) => {
       descricao: data.descricao,
       preco: data.preco,
       imagens: {
-        create: data.imagemUrls.map((url) => ({ url })), // Trabalhando com as imagens associadas
+        create: data.imagemUrls.map((url) => ({ url })), 
       },
     },
     include: {
-      imagens: true, // Incluir as imagens relacionadas na resposta
+      imagens: true, 
     },
   });
 };
@@ -33,7 +38,18 @@ export const createProduct = async (data: ProductCreateInput) => {
 export const updateProduct = async (id: string, data: ProductUpdateInput) => {
   return prisma.product.update({
     where: { id },
-    data,
+    data: {
+      nome: data.nome,
+      descricao: data.descricao,
+      preco: data.preco,
+      imagens: {
+        deleteMany: {}, 
+        create: data.imagemUrls.map((url) => ({ url })), 
+      },
+    },
+    include: {
+      imagens: true, 
+    },
   });
 };
 

@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - '3000:3000' # Mapeia a porta 3000 do container para a 3000 do host
+      - '3000:3000' 
     environment:
       DATABASE_URL: mysql://root:2002@db:3306/shoplink
     depends_on:
@@ -23,7 +23,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - '3306:3306' # Exponha essa porta se quiser acessar o MySQL do seu host
+      - '3306:3306' 
 
 volumes:
   db_data:

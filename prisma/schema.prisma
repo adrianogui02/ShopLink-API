@@ -31,7 +31,7 @@ enum Role {
 
 model Product {
   id        String   @id @default(uuid())
-  nome      String   @unique
+  nome      String
   descricao String
   preco     Float
   imagens   Image[]  @relation("ProductImages")

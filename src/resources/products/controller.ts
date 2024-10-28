@@ -53,7 +53,6 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       imageUrls.push(imageUrl);
     }
 
-    // Preenche os dados do produto com as URLs das imagens
     const productData = {
       nome,
       descricao,
@@ -69,15 +68,43 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-
-
 export const updateProduct = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { nome, descricao, preco, imagemUrl } = req.body;
   try {
-    const produtoAtualizado = await productService.updateProduct(String(id), { nome, descricao, preco, imagemUrl });
+    const { id } = req.params;
+    const { nome, descricao, preco } = req.body;
+    const files = req.files as Express.Multer.File[];
+
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: 'Pelo menos uma imagem é obrigatória' });
+      return;
+    }
+
+    // Verifique se o produto já existe
+    const alreadyExists = await checkAlreadyExists(nome);
+
+    if (alreadyExists) {
+      res.status(400).json({ error: 'Nome do produto já existe' });
+      return;
+    }
+
+    const imageUrls: string[] = [];
+
+    for (const file of files) {
+      const imageUrl = await uploadToPinataBase64(file);
+      imageUrls.push(imageUrl);
+    }
+
+    const productData = {
+      nome,
+      descricao,
+      preco: parseFloat(preco),
+      imagemUrls: imageUrls, 
+    };
+
+    const produtoAtualizado = await productService.updateProduct(id, productData);
     res.json(produtoAtualizado);
   } catch (error) {
+    console.error('Erro ao atualizar produto:', error);
     res.status(500).json({ error: 'Erro ao atualizar produto' });
   }
 };
