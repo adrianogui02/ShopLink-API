@@ -12,9 +12,9 @@ const pinata = new PinataSDK({
 
 const prisma = new PrismaClient();
 
-export const checkAlreadyExists = async (nome: string): Promise<boolean> => {
-    return !!(await prisma.product.findUnique({where: {nome}}));
-}
+//export const checkAlreadyExists = async (nome: string): Promise<boolean> => {
+//    return !!(await prisma.product.findUnique({where: {nome}}));
+//}
 
 // Função para converter o arquivo para base64
 const fileToBase64 = (file: Express.Multer.File): string => {

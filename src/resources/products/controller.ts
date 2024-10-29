@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as productService from './service';
 import { ProductCreateInput } from './types';
-import { checkAlreadyExists } from './helper';
+//import { checkAlreadyExists } from './helper';
 import { StatusCodes,ReasonPhrases } from 'http-status-codes';
 import { uploadToPinataBase64 } from './helper';
 
@@ -38,14 +38,6 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // Verifique se o produto já existe
-    const alreadyExists = await checkAlreadyExists(nome);
-
-    if (alreadyExists) {
-      res.status(400).json({ error: 'Nome do produto já existe' });
-      return;
-    }
-
     const imageUrls: string[] = [];
 
     for (const file of files) {
@@ -79,14 +71,6 @@ export const updateProduct = async (req: Request, res: Response) => {
       return;
     }
 
-    // Verifique se o produto já existe
-    const alreadyExists = await checkAlreadyExists(nome);
-
-    if (alreadyExists) {
-      res.status(400).json({ error: 'Nome do produto já existe' });
-      return;
-    }
-
     const imageUrls: string[] = [];
 
     for (const file of files) {
@@ -114,7 +98,13 @@ export const deleteProduct = async (req: Request, res: Response) => {
   try {
     await productService.deleteProduct(String(id));
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao deletar produto' });
+  } catch (error: any) {
+    if (error.message === 'Produto não encontrado') {
+      res.status(404).json({ error: 'Produto não encontrado' });
+    } else {
+      console.error('Erro ao deletar produto:', error);
+      res.status(500).json({ error: 'Erro ao deletar produto' });
+    }
   }
 };
+

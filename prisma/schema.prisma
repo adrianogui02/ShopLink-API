@@ -42,7 +42,7 @@ model Product {
 model Image {
   id        String   @id @default(uuid())
   url       String
-  product   Product  @relation("ProductImages", fields: [productId], references: [id])
+  product   Product  @relation("ProductImages", fields: [productId], references: [id], onDelete: Cascade)
   productId String
   createdAt DateTime @default(now())
 }
